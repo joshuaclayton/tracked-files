@@ -1,0 +1,53 @@
+name:                tracked-files
+version:             0.1.0.0
+github:              "joshuaclayton/tracked-files"
+license:             MIT
+author:              "Josh Clayton"
+maintainer:          "sayhi@joshuaclayton.me"
+copyright:           "2020 Josh Clayton"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/joshuaclayton/tracked-files#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- process
+- directory
+
+library:
+  source-dirs: src
+
+executables:
+  tracked-files:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - tracked-files
+    - process
+    - text
+    - directory
+
+tests:
+  tracked-files-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - tracked-files
+    - hspec
