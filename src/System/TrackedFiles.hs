@@ -1,5 +1,7 @@
 module System.TrackedFiles
-    ( trackedFiles
+    ( allFiles
+    , trackedFiles
+    , untrackedFiles
     ) where
 
 import qualified Control.Monad as M
@@ -8,19 +10,21 @@ import qualified Data.List as L
 import qualified System.Directory as D
 import qualified System.Process as Process
 
-trackedFiles :: MonadIO m => m [FilePath]
-trackedFiles = L.sort <$> existingFiles allFiles
-  where
-    existingFiles = liftIO . (M.filterM D.doesFileExist =<<)
-
+-- Relevant files, either due to being tracked and not deleted, or untracked
+-- that aren't omitted via .gitignore
 allFiles :: MonadIO m => m [FilePath]
-allFiles = (<>) <$> findTrackedFiles <*> findUntrackedFiles
+allFiles = L.sort <$> filesThatExist files
+  where
+    filesThatExist = liftIO . (M.filterM D.doesFileExist =<<)
+    files = (<>) <$> trackedFiles <*> untrackedFiles
 
-findTrackedFiles :: MonadIO m => m [FilePath]
-findTrackedFiles = liftIO $ lines <$> Process.readProcess "git" ["ls-files"] []
+-- All tracked files, including ones that have been deleted from the filesystem
+trackedFiles :: MonadIO m => m [FilePath]
+trackedFiles = liftIO $ lines <$> Process.readProcess "git" ["ls-files"] []
 
-findUntrackedFiles :: MonadIO m => m [FilePath]
-findUntrackedFiles =
+-- All untracked files that aren't omitted via .gitignore
+untrackedFiles :: MonadIO m => m [FilePath]
+untrackedFiles =
     liftIO $
     lines <$>
     Process.readProcess "git" ["ls-files", "--others", "--exclude-standard"] []

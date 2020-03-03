@@ -10,7 +10,7 @@ spec :: Spec
 spec =
     describe "System.TrackedFiles" $
     it "tracks correct files" $ do
-        files <- trackedFiles
+        files <- allFiles
         files `shouldSatisfy` elem ".gitignore"
         files `shouldSatisfy` elem "app/Main.hs"
         files `shouldSatisfy` elem "test/Spec.hs"
